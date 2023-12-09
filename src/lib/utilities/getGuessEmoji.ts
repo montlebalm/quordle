@@ -1,13 +1,14 @@
+import getGuessScore from './getGuessScore';
+
 export default function getGuessEmoji(answer: string, guess: string): string {
 	const emoji: string[] = [];
 
 	for (let i = 0; i < answer.length; i++) {
-		const answerLetter = answer[i];
-		const guessLetter = guess[i];
+		const score = getGuessScore(answer, guess, i);
 
-		if (answerLetter === guessLetter) {
+		if (score === 'correct') {
 			emoji.push('🟩');
-		} else if (answer.includes(guessLetter)) {
+		} else if (score === 'close') {
 			emoji.push('🟨');
 		} else {
 			emoji.push('⬜️');

@@ -1,28 +1,5 @@
 import type { Progress } from '$lib/types';
-import setAdd from './setAdd';
-
-function getAnswerProgressForGuess(answer: string, guess: string): Progress {
-	const progress: Progress = {
-		close: [],
-		correct: [],
-		inert: []
-	};
-
-	for (let i = 0; i < answer.length; i++) {
-		const answerLetter = answer[i];
-		const guessLetter = guess[i];
-
-		if (answerLetter === guessLetter) {
-			progress.correct.push(answerLetter);
-		} else if (answer.includes(guessLetter)) {
-			progress.close.push(guessLetter);
-		} else {
-			progress.inert.push(guessLetter);
-		}
-	}
-
-	return progress;
-}
+import getGuessScore from './getGuessScore';
 
 export default function getAnswerProgress(answer: string, guesses: string[]): Progress {
 	const closeSet = new Set<string>();
@@ -30,11 +7,17 @@ export default function getAnswerProgress(answer: string, guesses: string[]): Pr
 	const inertSet = new Set<string>();
 
 	guesses.forEach((guess) => {
-		const progress = getAnswerProgressForGuess(answer, guess);
+		for (let i = 0; i < answer.length; i++) {
+			const score = getGuessScore(answer, guess, i);
 
-		setAdd(closeSet, progress.close);
-		setAdd(correctSet, progress.correct);
-		setAdd(inertSet, progress.inert);
+			if (score === 'correct') {
+				correctSet.add(guess[i]);
+			} else if (score === 'close') {
+				closeSet.add(guess[i]);
+			} else {
+				inertSet.add(guess[i]);
+			}
+		}
 	});
 
 	return {
